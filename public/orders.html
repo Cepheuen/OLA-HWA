@@ -1,0 +1,107 @@
+<link rel="import" href="orders-service.html">
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="card-template.html">
+<link rel="import" href="bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="bower_components/paper-dialog/paper-action-dialog.html">
+<link rel="import" href="bower_components/paper-input/paper-input-decorator.html">
+<link rel="import" href="bower_components/core-icon-button/core-icon-button.html">
+<polymer-element name="order-catalog">
+  <template>
+    <link rel="stylesheet" href="bower_components/material-design-lite/material.min.css">
+    <script src="bower_components/material-design-lite/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+    .container {
+      text-align: center;
+      padding:30px 30px;
+      margin-bottom: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      overflow-x: scroll;
+    }
+    th {
+      color: rgb(117,117,117);
+      font-size: 12sp;
+    }
+    td {
+      color: rgb(33,33,33);
+      font-size: 12sp;
+    }
+    .full-width {
+      width: 100%;
+    }
+    .table {
+      flex: 1;
+    }
+    .content {
+      margin:0 40px;
+      display: flex;
+    }
+    .itemPopup{
+      display: block;
+    }
+    @media (max-width: 700px) {
+      .table {
+        min-width: 33.33%;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .table {
+        min-width: 50%;
+      }
+    }
+    table{
+      font-family: 'Roboto', sans-serif;
+    }
+    </style>
+    <core-ajax id="postdata"
+      url="/addGenieCatalog">
+    </core-ajax>
+    <core-ajax id="getitems"></core-ajax>
+    <orders-service id="service" orders="{{orders}}"></orders-service>
+    <card-template>
+      <card-title>View Orders</card-title>
+      <div class="container" layout vertical center>
+        <div class="table">
+          <table class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp full-width">
+          <thead>
+            <th>Order Id</th>
+            <th class="mdl-data-table__cell--non-numeric">Customer Name</th>
+            <th class="mdl-data-table__cell--non-numeric">Item Name</th>
+            <th>Quantity</th>
+            <th class="mdl-data-table__cell--non-numeric">Delivery Address</th>
+            <th class="mdl-data-table__cell--non-numeric">Payment Mode</th>
+          </thead>
+          <tbody>
+          <template repeat="{{info in orders}}">
+            <tr>
+              <td>{{info.orderId}}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{info.customername}}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{info.itemName}}</td>
+              <td>{{info.quantity}}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{info.deliveryaddress}}</td>
+              <td class="mdl-data-table__cell--non-numeric">{{info.paymentmode}}</td>
+            </tr>
+          </template>
+        </tbody>
+        </table>
+      </div>
+    </div>
+  </card-template>
+  </template>
+  <script src="https://cdn.socket.io/socket.io-1.3.5.js"></script>
+  <script>
+  var socket = io.connect('http://localhost:5000');
+  socket.on('connection',function(socket){
+    socket.on('order-placed',function(data){
+      console.log(data)
+    })
+  });
+  Polymer('order-catalog',{
+    ready: function () {
+      console.log(this.orders)
+    },
+  });
+  </script>
+</polymer-element>

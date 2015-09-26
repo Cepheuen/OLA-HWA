@@ -1,0 +1,224 @@
+<link rel="import" href="genie-service.html">
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="card-template.html">
+<link rel="import" href="bower_components/paper-fab/paper-fab.html">
+<link rel="import" href="bower_components/paper-dialog/paper-action-dialog.html">
+<link rel="import" href="bower_components/paper-input/paper-input-decorator.html">
+<link rel="import" href="bower_components/core-icon-button/core-icon-button.html">
+<polymer-element name="genie-catalog">
+  <template>
+    <link rel="stylesheet" href="bower_components/material-design-lite/material.min.css">
+    <script src="bower_components/material-design-lite/material.min.js"></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <style>
+    .container {
+      text-align: center;
+      padding:30px 30px;
+      margin-bottom: 40px;
+      display: flex;
+      flex-wrap: wrap;
+      overflow-x: scroll;
+    }
+    th {
+      color: rgb(117,117,117);
+      font-size: 12sp;
+    }
+    td {
+      color: rgb(33,33,33);
+      font-size: 12sp;
+    }
+    .full-width {
+      width: 100%;
+    }
+    .table {
+      flex: 1;
+    }
+    paper-action-dialog{
+      padding-left: auto;
+      padding-right: auto;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    .content {
+      margin:0 40px;
+      display: flex;
+    }
+    .itemPopup{
+      display: block;
+    }
+    paper-fab{
+      position: absolute;
+      bottom: 10px;
+      right: 10px;
+    }
+    @media (max-width: 700px) {
+      .table {
+        min-width: 33.33%;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .table {
+        min-width: 50%;
+      }
+    }
+    table{
+      font-family: 'Roboto', sans-serif;
+    }
+    </style>
+    <core-ajax id="postdata"
+      url="/addGenieCatalog">
+    </core-ajax>
+    <core-ajax id="getitems"></core-ajax>
+    <genie-service id="service" categories="{{categories}}"></genie-service>
+    <card-template>
+      <card-title>Genie Catalog</card-title>
+      <div class="container" layout vertical center>
+        <table id="categorytable" class="mdl-data-table mdl-js-data-table mdl-data-table--selectable mdl-shadow--2dp full-width">
+        <thead>
+          <th>#</th>
+          <th class="mdl-data-table__cell--non-numeric">Name</th>
+          <th class="mdl-data-table__cell--non-numeric">Store</th>
+          <th class="mdl-data-table__cell--non-numeric">Tagline</th>
+          <th class="mdl-data-table__cell--non-numeric">Image Url</th>
+          <th>Items</th>
+          <th></th>
+        </thead>
+        <tbody>
+        <template repeat="{{info,i in categories}}">
+          <tr>
+            <td>{{i+1}}</td>
+            <td class="mdl-data-table__cell--non-numeric"><span on-click="{{displayItems}}" style="cursor: pointer;">{{info.name}}<span></td>
+            <td class="mdl-data-table__cell--non-numeric">{{info.store}}</td>
+            <td class="mdl-data-table__cell--non-numeric">{{info.tags}}</td>
+            <td class="mdl-data-table__cell--non-numeric">{{info.image}}</td>
+            <td>{{info.item}}</td>
+            <td style="text-align: center;"><core-icon-button icon="add" on-click="{{additem}}"></core-icon-button></td>
+          </tr>
+        </template>
+      </tbody>
+      </table>
+      </div>
+    </div>
+    <paper-fab mini icon="add" on-tap="{{addCategory}}"></paper-fab>
+  </card-template>
+  <paper-action-dialog class="content" opened="{{dialogOpened}}" transition="core-transition-center" heading="Add category">
+    <div >
+      <paper-input-decorator label="Name">
+        <input is="core-element" value="{{categoryName}}">
+      </paper-input-decorator>
+      <paper-input-decorator label="Store">
+        <input is="core-element" value="{{categoryStore}}">
+      </paper-input-decorator>
+      <paper-input-decorator label="Tags">
+        <input is="core-element" value="{{categoryTag}}">
+      </paper-input-decorator>
+      <paper-input-decorator label="Image URL">
+        <input is="core-element" value="{{categoryImage}}">
+      </paper-input-decorator>
+    </div>
+    <paper-button on-tap="{{submitForm}}" affirmative autofocus>Accept</paper-button>
+  </paper-action-dialog>
+  <paper-action-dialog class="content" opened="{{itemsAddDialogOpened}}" transition="core-transition-center" heading="Add category">
+    <div >
+      <span hidden>{{itemsaddName}}</span>
+      <span hidden>{{itemsaddStore}}</span>
+      <paper-input-decorator label="Name">
+        <input is="core-element" value="{{itemsaddItemName}}">
+      </paper-input-decorator>
+      <paper-input-decorator label="Options">
+        <input is="core-element" value="{{itemsaddOptions}}">
+      </paper-input-decorator>
+      <paper-input-decorator label="Cost">
+        <input is="core-element" value="{{itemsaddCost}}">
+      </paper-input-decorator>
+    </div>
+    <paper-button on-tap="{{submitItems}}" affirmative autofocus>Done</paper-button>
+  </paper-action-dialog>
+  </template>
+  <script>
+  function itemscallback(data) {
+    var ajax = document.getElementById('getitems');
+    ajax.method = 'GET';
+    console.log(String(data));
+    ajax.url = "/getItems?category="+String(data);
+    ajax.contentType = 'application/json';
+    ajax.go();
+    ajax.addEventListener('core-response',function(e) {
+      var items = ajax.response.slice(0);
+      console.log(items)
+    })
+  }
+  Polymer('genie-catalog',{
+    ready: function () {
+      console.log(this.categories);
+    },
+    addCategory: function () {
+      this.dialogOpened = true;
+    },
+    submitForm: function() {
+      var pushObject = {}
+      pushObject['name'] = this.categoryName;
+      pushObject['image'] = this.categoryImage;
+      pushObject['tags'] = this.categoryTag;
+      pushObject['store'] = this.categoryStore;
+      pushObject['item'] = 0;
+      console.log(JSON.stringify(pushObject));
+      var ajax = this.$.postdata;
+      ajax.method = 'POST';
+      ajax.contentType = 'application/json';
+      ajax.body = JSON.stringify(pushObject);
+      ajax.go();
+      var category = this;
+      ajax.addEventListener('core-response', function(e){
+        var service = category.$.categoryservice;
+        service.calledMe();
+      });
+    },
+    itemsRetrieved: function(){
+      var response = this.$.getitems.response.slice(0);
+      this.itemsmodel = JSON.parse(response);
+      this.itemsDialogOpened = true;
+    },
+    displayItems: function(e,detail,sender){
+      var categoryname = e.target.templateInstance.model.info;
+      console.log(categoryname.name);
+       var ajax = this.$.getitems;
+       ajax.method = 'GET';
+       ajax.contentType = 'application/json';
+       ajax.url = "/getItems?category="+categoryname.name;
+       ajax.go();
+    },
+    additem: function(e,detail,sender){
+      this.itemsaddName = e.target.templateInstance.model.info.name;
+      this.itemsaddStore = e.target.templateInstance.model.info.store;
+      this.itemsAddDialogOpened = true;
+    },
+    submitItems: function() {
+      var pushObject = {}
+      pushObject['category'] = this.itemsaddName;
+      pushObject['itemname'] = this.itemsaddItemName;
+      pushObject['store'] = this.itemsaddStore;
+      pushObject['options'] = this.itemsaddOptions;
+      pushObject['cost'] = parseFloat(this.itemsaddCost);
+      this.itemsaddName = "";
+      this.itemsaddItemName = "";
+      this.itemsaddStore = "";
+      this.itemsaddOptions = "";
+      this.itemsaddCost = "";
+      console.log(JSON.stringify(pushObject));
+      var ajax = this.$.postitems;
+      ajax.method = 'POST';
+      ajax.url = '/addItems';
+      ajax.contentType = 'application/json';
+      ajax.body = JSON.stringify(pushObject);
+      ajax.go();
+      var category = this;
+      ajax.addEventListener('core-response', function(e){
+        var service = category.$.categoryservice;
+        service.calledMe();
+      });
+    }
+  });
+  </script>
+</polymer-element>

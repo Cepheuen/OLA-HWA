@@ -1,0 +1,124 @@
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/font-roboto/roboto.html">
+<link rel="import" href="bower_components/paper-shadow/paper-shadow.html">
+<link rel="import" href="bower_components/paper-ripple/paper-ripple.html">
+<polymer-element name="card-title">
+  <template>
+    <style>
+    :host{
+      font-family: 'Roboto', sans-serif;
+      font-weight: medium;
+      position: relative;
+      font-size: 1.5em;
+      color: black;
+      margin-left: 'auto';
+      margin-right: 'auto';
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+    </style>
+    <content select="span"></content>
+    <content select="p"></content>
+    <content select="div"></content>
+    <content></content>
+  </template>
+  <script>
+  Polymer({
+    ready:function(){
+      this.cepheuenblue = "#44bbf6";
+      this.shadowgreen  = "#3ca68d";
+    }
+  });
+  </script>
+</polymer-element>
+<polymer-element name="card-template">
+  <template>
+    <style>
+    :host{
+      display: inline-block;
+      background-color: white;
+      width:100%;
+      font-size: 1.2rem;
+      font-weight: 300;
+    }
+    .card-header{
+      position: relative;
+      display: inline-block;
+      padding: 10px 10px;
+
+    }
+    .container{
+      position:relative;
+      width: 100%;
+    }
+    polyfill-next-selector {content: ".card-header paper-input-decorator";}
+    .card-header ::content paper-input-decorator{
+      border-radius: 50%
+      display: block;
+
+    }
+    polyfill-next-selector {content: ".card-header card-title";}
+    .card-header ::content card-title{
+      margin-left: auto;
+      margin-right: auto;
+      border-radius: 50%;
+      width: 100%;
+      margin-top: 50px;
+      text-align: center;
+
+    }
+    polyfill-next-selector {content: ".card-header img";}
+    .card-header ::content img{
+      width: 100%;
+      margin: auto;
+      background-size: contain;
+    }
+    polyfill-next-selector {content: ".card-header paper-button";}
+    .card-header ::content paper-button{
+      margin-top: 50px;
+      margin-right: auto;
+      margin-bottom: 30px;
+      background-color: {{cepheuenblue}};
+      color: white;
+      margin-left: auto;
+    }
+    polyfill-next-selector {content:".card-header paper-fab";}
+    .card-header ::content paper-fab {
+      
+    }
+    .card-header ::content paper-input-decorator /deep/ .unfocused-underline{
+      background-color: {{cepheuenblue}};
+
+    }
+    .card-header ::content paper-input-decorator /deep/ .focused-underline{
+      background-color: {{shadowgreen}};
+
+    }
+    .card-header ::content paper-input-decorator /deep/ .cursor{
+      color: {{shadowgreen}};
+
+    }
+    .card-header ::content paper-input-decorator /deep/ .label-text{
+      color: {{shadowgreen}};
+
+    }
+    </style>
+      <paper-shadow class="card-header" z=3 center-justified layout horizontal>
+        <!-- <paper-ripple class="recenteringTouch" fit></paper-ripple> -->
+        <div class="container" layout center-justified vertical>
+          <content></content>
+          <content select="img"></content>
+          <content select="card-title"></content>
+        </div>
+          <content select="paper-fab"></content>
+      </paper-shadow>
+  </template>
+  <script>
+  Polymer('card-template',{
+    ready:function(){
+      this.cepheuenblue = "#44bbf6";
+      this.shadowgreen  = "#3ca68d";
+    }
+  });
+  </script>
+</polymer-element>

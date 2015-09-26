@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+<head>
+  <title>Genie Login</title>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+  <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
+  <link rel="import" href="bower_components/font-roboto/roboto.html">
+  <link rel="import" href="bower_components/polymer/polymer.html">
+  <link rel="import" href="bower_components/core-transition/core-transition-css.html">
+  <link rel="import" href="bower_components/core-ajax/core-ajax.html">
+  <link href="bower_components/paper-input/paper-input-decorator.html" rel="import">
+  <link href="bower_components/paper-button/paper-button.html" rel="import">
+
+  <style>
+    body {
+      background: #495a68;
+      font-family: 'Roboto', sans-serif;
+    }
+    .login,.signup {
+      padding: 30px 30px;
+      background-color: #f3f3f3;
+      text-align: center;
+      width: 35%;
+      margin: 0 auto;
+    }
+    .container {
+      display: block;
+      text-align: center;
+    }
+    paper-button{
+      background: #00bf0d;
+      color: #fff;
+    }
+    h2{
+      text-align: center;
+    }
+  </style>
+</head>
+<body unresolved>
+<div class="container" fit vertical center-justified layout>
+<div class="login" id="login" style="display: block;">
+  <h2>Login</h2>
+  <span id="loginerror"></span>
+  <paper-input-decorator label="email address">
+    <input is="core-element" required id="loginEmail">
+  </paper-input-decorator>
+  <paper-input-decorator label="Password" type="password">
+    <input is="core-element" required id="loginPassword" type="password">
+  </paper-input-decorator>
+  <div flex>
+    <paper-button onclick="login()">Login</paper-button>
+    <paper-button onclick="swap('signup','login')">Signup</paper-button>
+  </div>
+</div>
+<div class="signup" id="signup" style="display: none;">
+  <h2>Register</h2>
+  <paper-input-decorator label="Full Name">
+    <input is="core-element" required id="fullname">
+  </paper-input-decorator>
+  <paper-input-decorator label="Password">
+    <input is="core-element" required id="password" type="password">
+  </paper-input-decorator>
+  <paper-input-decorator id="passdecorator" error="Passwords does not match" label="Confirm Password">
+    <input is="core-element" required id="re-password" type="password"  onchange="validate()">
+  </paper-input-decorator>
+  <paper-input-decorator label="email address">
+    <input is="core-element" required id="email">
+  </paper-input-decorator>
+  <div flex>
+    <paper-button onclick="swap('login','signup')">Login</paper-button>
+    <paper-button onclick="register()">Signup</paper-button>
+  </div>
+</div>
+<core-ajax id="ajaxlogin"
+  url="/login">
+</core-ajax>
+<core-ajax id="ajaxsignup"
+  url="/register">
+</core-ajax>
+<script>
+  <% if(typeof message != 'undefined') {%>
+    var span = document.getElementById('loginerror');
+    span.textContent = <%-message%>
+    console.log('<%-message%>')
+  <% } %>
+  function validate()
+  {
+    var paperDecorator = document.getElementById('passdecorator');
+    var password = document.getElementById('password').value;
+    var pass2 = document.getElementById('re-password').value;
+    if(password != pass2) {
+      paperDecorator.isInvalid = true;
+    }
+    else {
+      paperDecorator.isInvalid = false;
+    }
+  }
+  function swap(one,two)
+  {
+    document.getElementById(two).style.display = 'none';
+    document.getElementById(one).style.display = 'block';
+  }
+  function login()
+  {
+    var credentials = {};
+    credentials['username'] = document.getElementById('loginEmail').value;
+    credentials['password'] = document.getElementById('loginPassword').value;
+    var ajax = document.getElementById('ajaxlogin');
+    ajax.method = 'POST';
+    ajax.contentType = 'application/json';
+    ajax.body = JSON.stringify(credentials);
+    ajax.go();
+    ajax.addEventListener("core-response",function(e){
+      if(e.detail.response == 'Authenticated')
+        window.location = '/';
+    })
+  }
+  function register()
+  {
+    var credentials = {};
+    credentials['email'] = document.getElementById('email').value;
+    credentials['password'] = document.getElementById('password').value;
+    credentials['name'] = document.getElementById('fullname').value;
+    var ajax = document.getElementById('ajaxsignup');
+    ajax.method = 'POST';
+    ajax.contentType = 'application/json';
+    ajax.body = JSON.stringify(credentials);
+    ajax.go();
+    ajax.addEventListener("core-response",function(e){
+      console.log(e.detail.response)
+      if(e.detail.response == 'Registered')
+        window.location = '/';
+    })
+  }
+</script>
+</body>
+</html>

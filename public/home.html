@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+<head>
+  <title>Genie Dashboard</title>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+
+  <script src="bower_components/webcomponentsjs/webcomponents.js"></script>
+
+  <!-- Bower Components Imports -->
+  <link rel="import" href="bower_components/core-header-panel/core-header-panel.html">
+  <link rel="import" href="bower_components/core-toolbar/core-toolbar.html">
+  <link rel="import" href="bower_components/core-menu/core-menu.html">
+  <link rel="import" href="bower_components/core-scaffold/core-scaffold.html">
+  <link rel="import" href="bower_components/core-item/core-item.html">
+  <link rel="import" href="bower_components/core-menu/core-submenu.html">
+  <link rel="import" href="bower_components/core-icons/maps-icons.html">
+
+  <!-- Custom Template Imports -->
+  <link rel="import" href="category.html">
+  <link rel="import" href="genie.html">
+  <link rel="import" href="orders.html">
+
+  <style shim-shadowdom>
+    html, body {
+      height: 100%;
+    }
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      color: #333;
+    }
+    core-header-panel {
+      height: 100%;
+      overflow: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    core-toolbar {
+      color: #ffffff;
+      background: #03a9f4;
+    }
+    category-table,genie-catalog {
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: 20px;
+      width: 80%;
+    }
+    .title {
+      -webkit-transform-origin: 0;
+      transform-origin: 0;
+      font-size: 40px;
+    }
+    .content {
+      margin:0 50px;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body unresolved>
+  <core-scaffold>
+    <core-header-panel navigation flex mode="seamed">
+    <core-menu theme="core-light-theme" selected="categorymenu" id="navmenu" valueattr='id'>
+      <core-submenu icon="account-circle" label="<%- user %>">
+        <core-item  label="Logout"></core-item>
+      </core-submenu>
+      <core-submenu id='categorymenu' icon="arrow-drop-down" valueattr = 'id' selected = 'trending' label="Categories">
+        <core-item id="trending" icon="trending-up" label="Hot & Trending"></core-item>
+        <core-item icon="maps:local-attraction" label="Genie Catalog"></core-item>
+      </core-submenu>
+      <core-item icon="shopping-cart" label="View Orders"></core-item>
+    </core-menu>
+    </core-header-panel>
+    <div tool>Genie Dashboard</div>
+    <div class="container">
+      <category-table id="hotcategory" style="display: none;"></category-table>
+      <genie-catalog id="geniecatalog" style="display: none;"></genie-catalog>
+      <order-catalog id="ordercatalog" style="display: none;"></order-catalog>
+    </div>
+  </core-scaffold>
+  <script>
+    var navbar = document.getElementById('navmenu');
+    navbar.selected = ''
+    navbar.addEventListener('core-select', function(event) {
+      var item = event.detail.item.label;
+      console.log(item);
+      if(item == 'Genie Catalog' && event.detail.isSelected) {
+        console.log(event.detail.isSelected);
+        document.getElementById('geniecatalog').style.display = 'block';
+        document.getElementById('hotcategory').style.display = 'none';
+        document.getElementById('ordercatalog').style.display = 'none';
+      }
+      else if(item == 'Hot & Trending' && event.detail.isSelected) {
+        document.getElementById('hotcategory').style.display = 'block';
+        document.getElementById('geniecatalog').style.display = 'none';
+        document.getElementById('ordercatalog').style.display = 'none';
+      }
+      else if(item == 'View Orders' && event.detail.isSelected) {
+        console.log(event.detail.isSelected);
+        document.getElementById('ordercatalog').style.display = 'block';
+        document.getElementById('hotcategory').style.display = 'none';
+        document.getElementById('geniecatalog').style.display = 'none';
+      }
+      else if(item == 'Logout' && event.detail.isSelected) {
+        document.location = '/logout';
+      }
+    });
+  </script>
+</body>
+</html>

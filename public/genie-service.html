@@ -1,0 +1,28 @@
+<link rel="import" href="bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="bower_components/polymer/polymer.html">
+<polymer-element name="genie-service" attributes="categories">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+    </style>
+    <core-ajax id="categoryCallback"
+      auto
+      url="/fetchGenieCatalog"
+      on-core-response="{{rowsLoaded}}"
+      handleAs="json">
+    </core-ajax>
+  </template>
+  <script>
+  Polymer('genie-service',{
+    created: function() {
+      this.categories = [];
+    },
+    rowsLoaded: function() {
+      this.categories = this.$.categoryCallback.response.slice(0);
+      console.log(this.categories);
+    }
+  });
+  </script>
+</polymer-element>

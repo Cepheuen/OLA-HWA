@@ -1,0 +1,28 @@
+<link rel="import" href="bower_components/core-ajax/core-ajax.html">
+<link rel="import" href="bower_components/polymer/polymer.html">
+<polymer-element name="orders-service" attributes="orders">
+  <template>
+    <style>
+      :host {
+        display: none;
+      }
+    </style>
+    <core-ajax id="orderCallback"
+      auto
+      url="/getOrders"
+      on-core-response="{{rowsLoaded}}"
+      handleAs="json">
+    </core-ajax>
+  </template>
+  <script>
+  Polymer('orders-service',{
+    created: function() {
+      this.orders = [];
+    },
+    rowsLoaded: function() {
+      this.orders = this.$.orderCallback.response.slice(0);
+      console.log(this.orders);
+    }
+  });
+  </script>
+</polymer-element>
