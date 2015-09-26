@@ -18,6 +18,7 @@ router.get('/fetchPlaylist',function(req,res){
 router.post('/createPlaylist',function(req,res){
   var data = req.body
   var mPlaylist = new Playlist(data)
+  console.log(data)
   mPlaylist.save(function(err){
     if(err)
       res.json({status:'failure',error:err})

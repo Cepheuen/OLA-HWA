@@ -11,10 +11,11 @@ app.engine('html',ejs.renderFile)
 
 app.use('/img',   express.static(__dirname + '/public/img'));
 app.set('views',__dirname+'/public')
-app.use('/',routes)
 
 app.use(bodyparser.urlencoded({ extended: false }))
 app.use(bodyparser.json())
+app.use('/',routes)
+
 app.use(express.static(__dirname + '/public'));
 mongoose.connect("mongodb://localhost:27017/ola_db", function(error){
   if(error)
