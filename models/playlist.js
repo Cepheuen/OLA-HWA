@@ -3,7 +3,7 @@ var musicSchema = mongoose.Schema({
   musicId: Number,
   songName: String,
   albumName: String,
-  link: String
+  url: String
 })
 var playlistSchema = mongoose.Schema({
   crn: Number,
