@@ -2,8 +2,8 @@ var mongoose = require('mongoose')
 var musicSchema = mongoose.Schema({
   musicId: Number,
   songName: String,
+  url: String,
   albumName: String,
-  url: String
 })
 var playlistSchema = mongoose.Schema({
   crn: Number,
