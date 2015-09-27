@@ -5,6 +5,7 @@ var Music = require('../models/music.js')
 var Playlist = require('../models/playlist.js')
 var Game = require('../models/gamify.js')
 var User = require('../models/user.js')
+var async = require('async')
 
 router.get('/storeRide',function(req,res){
   var client_id = req.query.client_id
@@ -40,17 +41,9 @@ router.get('/storeRide',function(req,res){
     }
   })
 })
-router.get('/leadership',function(req,res){
-  var user = req.query.userid
+router.get('/leaderboard',function(req,res){
   Game.find({}).sort({points: 'descending'}).exec(function(err,data){
-    if(!err)
-    {
-      res.json(data)
-    }
-    else{
-      var data = {status: "failure"}
-      res.json(data)
-    }
+    res.json(data)
   })
 })
 router.get('/fetchMusic', function (req, res) {
